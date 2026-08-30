@@ -6,17 +6,17 @@ const STEPS: Step[] = [
   {
     target: "header",
     title: "Top Bar",
-    content: "Property switcher, notifications aur profile — sab yahan hai.",
+    content: "Switch properties, check notifications, and manage your profile — all from the top bar.",
   },
   {
     target: "nav",
     title: "Navigation",
-    content: "Sidebar se saare sections kholo: Dashboard, Properties, Radar, Documents, Tasks...",
+    content: "Use the sidebar to explore your Dashboard, Properties, Compliance Radar, Documents, Tasks, and more.",
   },
   {
     target: "main",
     title: "Dashboard",
-    content: "Yahan live compliance overview hai — health score, deadlines, aur alerts.",
+    content: "Your live compliance overview — health scores, deadlines, and alerts at a glance.",
   },
 ]
 
@@ -53,10 +53,10 @@ export default function ProductTour() {
         primaryColor: "#1d4ed8",
       }}
       locale={{
-        back: "Peeche",
-        next: "Aage →",
-        nextWithProgress: "Aage →",
-        last: "Khatam ✓",
+        back: "Back",
+        next: "Next",
+        nextWithProgress: "Next",
+        last: "Finish",
         skip: "Skip",
       }}
       onEvent={handleEvent}
