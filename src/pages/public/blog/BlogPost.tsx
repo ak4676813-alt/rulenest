@@ -57,7 +57,7 @@ export default function BlogPost() {
       },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://rulenest.app/blog/${post.slug}`,
+        "@id": `https://getrulenest.com/blog/${post.slug}`,
       },
       description: post.excerpt,
     })

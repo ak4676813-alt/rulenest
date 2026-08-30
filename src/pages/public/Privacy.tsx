@@ -51,17 +51,17 @@ export default function Privacy() {
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
                 Questions about this policy? Email{" "}
                 <a
-                  href="mailto:support@rulenest.app"
+                  href="mailto:support@getrulenest.com"
                   className="font-semibold text-primary-600 transition-colors hover:text-primary-700"
                 >
-                  support@rulenest.app
+                  support@getrulenest.com
                 </a>
                 . For security matters, use{" "}
                 <a
-                  href="mailto:security@rulenest.app"
+                  href="mailto:security@getrulenest.com"
                   className="font-semibold text-primary-600 transition-colors hover:text-primary-700"
                 >
-                  security@rulenest.app
+                  security@getrulenest.com
                 </a>
                 .
               </p>

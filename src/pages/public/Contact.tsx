@@ -7,7 +7,7 @@ import { usePageMeta } from "../../hooks/usePageMeta"
 export default function Contact() {
   usePageMeta(
     "Contact — RuleNest",
-    "Contact the RuleNest team. We reply to every message within 24 hours. Email support@rulenest.app or visit the Help Center.",
+    "Contact the RuleNest team. We reply to every message within 24 hours. Email support@getrulenest.com or visit the Help Center.",
   )
 
   return (
@@ -34,9 +34,9 @@ export default function Contact() {
                 The fastest way to reach us. We reply to every message within 24 hours.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <a href="mailto:support@rulenest.app">
+                <a href="mailto:support@getrulenest.com">
                   <Button icon={<Mail className="h-4 w-4 text-white" strokeWidth={1.5} />}>
-                    support@rulenest.app
+                    support@getrulenest.com
                   </Button>
                 </a>
               </div>

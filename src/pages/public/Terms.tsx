@@ -61,10 +61,10 @@ export default function Terms() {
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
                 Questions about these terms? Email{" "}
                 <a
-                  href="mailto:support@rulenest.app"
+                  href="mailto:support@getrulenest.com"
                   className="font-semibold text-primary-600 transition-colors hover:text-primary-700"
                 >
-                  support@rulenest.app
+                  support@getrulenest.com
                 </a>
                 .
               </p>

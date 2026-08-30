@@ -17,14 +17,14 @@ const PILLARS = [
   {
     icon: ShieldCheck,
     title: "Responsible disclosure",
-    text: "Found a security issue? Tell us at security@rulenest.app and we'll respond promptly. We're grateful to researchers who report responsibly.",
+    text: "Found a security issue? Tell us at security@getrulenest.com and we'll respond promptly. We're grateful to researchers who report responsibly.",
   },
 ]
 
 export default function Security() {
   usePageMeta(
     "Security — RuleNest",
-    "How RuleNest protects your data: encryption in transit, demo data stored only in your browser, and a responsible disclosure program at security@rulenest.app.",
+    "How RuleNest protects your data: encryption in transit, demo data stored only in your browser, and a responsible disclosure program at security@getrulenest.com.",
   )
 
   return (
@@ -56,10 +56,10 @@ export default function Security() {
           <p className="mx-auto mt-12 max-w-xl text-center text-sm leading-relaxed text-gray-600">
             Have a vulnerability to report? Email{" "}
             <a
-              href="mailto:security@rulenest.app"
+              href="mailto:security@getrulenest.com"
               className="font-semibold text-primary-600 transition-colors hover:text-primary-700"
             >
-              security@rulenest.app
+              security@getrulenest.com
             </a>
             . Please include reproduction steps if you have them.
           </p>
