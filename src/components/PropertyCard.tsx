@@ -1,8 +1,13 @@
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CalendarClock, ExternalLink, MapPin } from "lucide-react"
+import { CalendarClock, ExternalLink, MapPin, MoreHorizontal, Trash2 } from "lucide-react"
 import * as L from "leaflet"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+import Button from "./ui/Button"
+import Modal from "./ui/Modal"
+import { useData } from "../context/DataContext"
+import { useToast } from "../context/ToastContext"
 import type { Property } from "../types"
 import { cn, formatDate, relativeDeadline, statusLabel } from "../lib/utils"
 
@@ -65,10 +70,25 @@ function PropertyMiniMap({ property }: { property: Property }) {
 
 export default function PropertyCard({ property }: { property: Property }) {
   const navigate = useNavigate()
+  const { deleteProperty } = useData()
+  const { toast } = useToast()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const open = () => navigate(`/app/properties/${property.id}`)
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${property.address}, ${property.city}, ${property.state}`,
   )}`
+
+  function handleDelete() {
+    setConfirmOpen(false)
+    setMenuOpen(false)
+    deleteProperty(property.id)
+    toast({
+      variant: "success",
+      title: "Property deleted",
+      description: `${property.address} was removed along with its documents, tasks, and alerts.`,
+    })
+  }
 
   const score = property.healthScore
   const barGradient =
@@ -79,6 +99,7 @@ export default function PropertyCard({ property }: { property: Property }) {
         : "from-red-400 to-rose-500"
 
   return (
+    <>
     <div
       role="link"
       tabIndex={0}
@@ -127,7 +148,43 @@ export default function PropertyCard({ property }: { property: Property }) {
         </a>
       </div>
       {/* Details */}
-      <div className="p-4 sm:p-5">
+      <div className="relative p-4 sm:p-5">
+        {/* Card menu — Delete property */}
+        <div
+          className="absolute right-3 top-3 z-10"
+          onMouseLeave={() => setMenuOpen(false)}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setMenuOpen((v) => !v)
+            }}
+            aria-label={`Actions for ${property.address}`}
+            aria-expanded={menuOpen}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/70 text-gray-400 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-gray-600"
+          >
+            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-9 z-20 w-44 animate-scale-in rounded-xl border border-gray-200 bg-white p-1 shadow-pop">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setMenuOpen(false)
+                  setConfirmOpen(true)
+                }}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                Delete property
+              </button>
+            </div>
+          )}
+        </div>
+
         <p className="font-semibold text-gray-900 transition-colors group-hover:text-primary-700">
           {property.address}
         </p>
@@ -166,6 +223,29 @@ export default function PropertyCard({ property }: { property: Property }) {
           )}
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Confirm delete */}
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Delete property?"
+        subtitle={property.address}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm leading-relaxed text-gray-600">
+          Delete this property? Its documents, tasks, and alerts will also be removed.
+        </p>
+      </Modal>
+    </>
   )
 }

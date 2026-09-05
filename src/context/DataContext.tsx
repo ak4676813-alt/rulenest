@@ -15,11 +15,14 @@ import type {
   DocumentItem,
   InboxItem,
   Property,
+  RegulatoryChange,
   ReportRecord,
   Requirement,
 } from "../types"
 import { loadData, resetData, saveData } from "../lib/storage"
 import { buildExampleSeedData } from "../data/mockData"
+import { CITY_BULLETINS } from "../data/cityBulletins"
+import { CITIES, citySlug } from "../data/cities"
 import { propertyStatusFromScore, uid } from "../lib/utils"
 import { useAuth } from "./AuthContext"
 
@@ -39,6 +42,9 @@ interface DataContextValue extends AppData {
   unreadInboxCount: number
   getProperty: (id: string) => Property | undefined
   addProperty: (input: NewPropertyInput) => Property
+  /** Cascade-deletes the property, its requirements, documents, tasks, activity,
+   *  inbox references, report references, and radar alert links. */
+  deleteProperty: (id: string) => void
   addTask: (input: {
     title: string
     propertyId: string
@@ -91,9 +97,68 @@ function pushActivity(
   return { ...data, activity: [item, ...data.activity].slice(0, 50) }
 }
 
+/* ------------------- Compliance Radar derivation ------------------------- *
+   Alerts are generated from the static CITY_BULLETINS dataset, matched to the
+   user's property jurisdictions by canonical city slug. Read state lives in its
+   own localStorage key so "mark read" survives reloads. */
+
+const RADAR_READ_KEY = "rulenest.radarRead.v1"
+
+function loadRadarRead(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(RADAR_READ_KEY)
+    return raw ? (JSON.parse(raw) as Record<string, boolean>) : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveRadarRead(record: Record<string, boolean>): void {
+  localStorage.setItem(RADAR_READ_KEY, JSON.stringify(record))
+}
+
+/** Map a property to the canonical citySlug used by CITIES / cityBulletins. */
+function propertyCitySlug(p: Property): string {
+  const name = p.city.trim().toLowerCase()
+  const hit = CITIES.find((c) => c.name.toLowerCase() === name)
+  return hit?.slug ?? citySlug(p.city)
+}
+
+const CITY_NAME_BY_SLUG = new Map(CITIES.map((c) => [c.slug, c.name]))
+
+function buildRadarChanges(
+  properties: Property[],
+  read: Record<string, boolean>,
+): RegulatoryChange[] {
+  const matchedSlugs = new Set(properties.map(propertyCitySlug))
+  return CITY_BULLETINS.filter((b) => matchedSlugs.has(b.citySlug))
+    .map<RegulatoryChange>((b) => {
+      const affected = properties
+        .filter((p) => propertyCitySlug(p) === b.citySlug)
+        .map((p) => p.id)
+      return {
+        id: b.id,
+        jurisdiction: CITY_NAME_BY_SLUG.get(b.citySlug) ?? b.citySlug,
+        title: b.title,
+        summary: b.summary,
+        severity: b.severity,
+        detectedAt: b.detectedDate,
+        effectiveDate: b.effectiveDate,
+        source: b.sourceName,
+        affectedPropertyIds: affected,
+        requiredAction: b.afterText,
+        before: { label: "Before", text: b.beforeText },
+        after: { label: "After", text: b.afterText },
+        read: read[b.id] ?? false,
+      }
+    })
+    .sort((a, b) => b.detectedAt.localeCompare(a.detectedAt))
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const [data, setData] = useState<AppData>(loadData)
+  const [radarRead, setRadarRead] = useState<Record<string, boolean>>(() => loadRadarRead())
 
   // Seed a fresh workspace for a NEW user exactly once (first sign-in). Existing
   // sessions keep the old data untouched. If data already exists in storage we
@@ -125,6 +190,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const getProperty = useCallback(
     (id: string) => data.properties.find((p) => p.id === id),
     [data.properties],
+  )
+
+  // Derived Compliance Radar alerts: bulletins for the user's property cities.
+  const changes = useMemo(
+    () => buildRadarChanges(data.properties, radarRead),
+    [data.properties, radarRead],
   )
 
   const addProperty = useCallback(
@@ -395,12 +466,41 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [update],
   )
 
-  const markChangeRead = useCallback(
+  const markChangeRead = useCallback((id: string) => {
+    setRadarRead((prev) => {
+      if (prev[id]) return prev
+      const next = { ...prev, [id]: true }
+      saveRadarRead(next)
+      return next
+    })
+  }, [])
+
+  const deleteProperty = useCallback(
     (id: string) => {
-      update((current) => ({
-        ...current,
-        changes: current.changes.map((c) => (c.id === id ? { ...c, read: true } : c)),
-      }))
+      update((current) => {
+        const property = current.properties.find((p) => p.id === id)
+        const next: AppData = {
+          ...current,
+          properties: current.properties.filter((p) => p.id !== id),
+          requirements: current.requirements.filter((r) => r.propertyId !== id),
+          documents: current.documents.filter((d) => d.propertyId !== id),
+          tasks: current.tasks.filter((t) => t.propertyId !== id),
+          activity: current.activity.filter((a) => a.propertyId !== id),
+          inbox: current.inbox.filter((i) => i.detectedPropertyId !== id),
+          reports: current.reports.filter((r) => r.propertyId !== id),
+          changes: current.changes
+            .map((c) => ({
+              ...c,
+              affectedPropertyIds: c.affectedPropertyIds.filter((pid) => pid !== id),
+            }))
+            .filter((c) => c.affectedPropertyIds.length > 0),
+        }
+        return pushActivity(
+          next,
+          `Property deleted: ${property?.address ?? id}`,
+          "property",
+        )
+      })
     },
     [update],
   )
@@ -479,9 +579,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const value = useMemo<DataContextValue>(
     () => ({
       ...data,
+      // Override the (empty/mock) persisted changes with city-derived alerts.
+      changes,
       unreadInboxCount,
       getProperty,
       addProperty,
+      deleteProperty,
       addTask,
       completeTask,
       snoozeTask,
@@ -501,9 +604,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }),
     [
       data,
+      changes,
       unreadInboxCount,
       getProperty,
       addProperty,
+      deleteProperty,
       addTask,
       completeTask,
       snoozeTask,
