@@ -24,15 +24,35 @@ import Card from "../../components/ui/Card"
 import HealthBar from "../../components/ui/HealthBar"
 import { useData } from "../../context/DataContext"
 import { cn, daysUntil, formatDate, relativeDeadline, timeAgo } from "../../lib/utils"
-import type { ActivityItem, Property } from "../../types"
+import type { ActivityItem, Property, RegulatoryChange } from "../../types"
 
-const ACTIVITY_ICONS: Record<ActivityItem["type"], { icon: LucideIcon; classes: string }> = {
-  inspection: { icon: ClipboardCheck, classes: "border border-neutral-200 bg-white text-neutral-900" },
-  regulation: { icon: Landmark, classes: "border border-neutral-200 bg-white text-neutral-900" },
-  document: { icon: FileText, classes: "border border-neutral-200 bg-white text-neutral-900" },
-  task: { icon: ListChecks, classes: "border border-neutral-200 bg-white text-neutral-900" },
-  property: { icon: Building2, classes: "border border-neutral-200 bg-white text-neutral-900" },
-  report: { icon: FileBarChart, classes: "border border-neutral-200 bg-white text-neutral-900" },
+/* Mini 3D icon tiles for list/table rows — hue, gradient and colored outer glow
+   per activity type (see MiniTile). Rows stay calm: no float, just depth. */
+const ACTIVITY_ICONS: Record<ActivityItem["type"], { icon: LucideIcon; tileClasses: string }> = {
+  task: {
+    icon: ListChecks,
+    tileClasses: "from-indigo-400 via-indigo-500 to-indigo-600 shadow-[0_6px_16px_-4px_rgba(99,102,241,0.5)]",
+  },
+  document: {
+    icon: FileText,
+    tileClasses: "from-violet-400 via-purple-500 to-violet-600 shadow-[0_6px_16px_-4px_rgba(139,92,246,0.55)]",
+  },
+  inspection: {
+    icon: ClipboardCheck,
+    tileClasses: "from-teal-400 via-teal-500 to-cyan-600 shadow-[0_6px_16px_-4px_rgba(20,184,166,0.55)]",
+  },
+  regulation: {
+    icon: Landmark,
+    tileClasses: "from-blue-400 via-blue-500 to-blue-600 shadow-[0_6px_16px_-4px_rgba(59,130,246,0.5)]",
+  },
+  property: {
+    icon: Building2,
+    tileClasses: "from-slate-400 via-slate-500 to-slate-600 shadow-[0_6px_16px_-4px_rgba(100,116,139,0.45)]",
+  },
+  report: {
+    icon: FileBarChart,
+    tileClasses: "from-rose-400 via-pink-500 to-rose-600 shadow-[0_6px_16px_-4px_rgba(244,63,94,0.5)]",
+  },
 }
 
 /* Small city → [lat, lng] lookup for the Portfolio Map pins. */
@@ -67,6 +87,38 @@ function deadlineTone(iso: string): string {
   if (days < 0 || days <= 15) return "text-red-600"
   if (days <= 45) return "text-amber-600"
   return "text-gray-500"
+}
+
+/* Colored outer glow to match a property's `imageGradient` hue. */
+function propertyGlow(gradient: string): string {
+  if (gradient.includes("slate") || gradient.includes("gray"))
+    return "shadow-[0_6px_16px_-4px_rgba(100,116,139,0.45)]"
+  if (gradient.includes("violet") || gradient.includes("purple") || gradient.includes("fuchsia"))
+    return "shadow-[0_6px_16px_-4px_rgba(139,92,246,0.55)]"
+  if (gradient.includes("cyan") || gradient.includes("teal") || gradient.includes("sky"))
+    return "shadow-[0_6px_16px_-4px_rgba(14,165,233,0.55)]"
+  return "shadow-[0_6px_16px_-4px_rgba(59,130,246,0.5)]"
+}
+
+/* Gradient + glow for Upcoming Deadlines, keyed by urgency. */
+function deadlineTile(iso: string): string {
+  const days = daysUntil(iso)
+  if (days === null)
+    return "from-slate-400 via-slate-500 to-slate-600 shadow-[0_6px_16px_-4px_rgba(100,116,139,0.45)]"
+  if (days < 0)
+    return "from-red-400 via-red-500 to-orange-500 shadow-[0_6px_16px_-4px_rgba(239,68,68,0.55)]"
+  if (days <= 15)
+    return "from-amber-400 via-amber-500 to-orange-500 shadow-[0_6px_16px_-4px_rgba(245,158,11,0.55)]"
+  return "from-emerald-400 via-emerald-500 to-teal-600 shadow-[0_6px_16px_-4px_rgba(16,185,129,0.5)]"
+}
+
+/* Gradient + glow for the Compliance Radar preview rows, keyed by severity. */
+function radarSeverityTile(severity: RegulatoryChange["severity"]): string {
+  if (severity === "critical" || severity === "high")
+    return "from-red-400 via-red-500 to-rose-600 shadow-[0_6px_16px_-4px_rgba(239,68,68,0.55)]"
+  if (severity === "medium")
+    return "from-amber-400 via-amber-500 to-orange-500 shadow-[0_6px_16px_-4px_rgba(245,158,11,0.55)]"
+  return "from-slate-400 via-slate-500 to-slate-600 shadow-[0_6px_16px_-4px_rgba(100,116,139,0.45)]"
 }
 
 export default function Dashboard() {
@@ -234,14 +286,11 @@ export default function Dashboard() {
                   to={`/app/properties/${p.id}`}
                   className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-gray-50"
                 >
-                  <span
-                    className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br",
-                      p.imageGradient,
-                    )}
-                  >
-                    <Building2 className="h-4 w-4 text-white" strokeWidth={1.5} aria-hidden="true" />
-                  </span>
+                  <MiniTile
+                    icon={Building2}
+                    tileClasses={cn(p.imageGradient, propertyGlow(p.imageGradient))}
+                    size="h-10 w-10 rounded-xl"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">{p.address}</p>
                     <p className="text-xs text-gray-500">
@@ -264,14 +313,7 @@ export default function Dashboard() {
                 const config = ACTIVITY_ICONS[item.type]
                 return (
                   <li key={item.id} className="flex items-center gap-3.5 px-5 py-3.5 sm:px-6">
-                    <span
-                      className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-                        config.classes,
-                      )}
-                    >
-                      <config.icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                    </span>
+                    <MiniTile icon={config.icon} tileClasses={config.tileClasses} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">{item.text}</p>
                       <p className="text-xs text-gray-400">{timeAgo(item.at)}</p>
@@ -319,9 +361,12 @@ export default function Dashboard() {
                 {radarItems.map((c) => (
                   <div key={c.id} className="rounded-xl border border-gray-100 p-4">
                     <div className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white">
-                        <MapPin className="h-3.5 w-3.5 text-neutral-900" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
+                      <MiniTile
+                        icon={MapPin}
+                        tileClasses={radarSeverityTile(c.severity)}
+                        size="mt-0.5 h-7 w-7 rounded-lg"
+                        iconSize="h-3.5 w-3.5"
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-sm font-semibold text-gray-900">{c.jurisdiction}</p>
@@ -359,9 +404,7 @@ export default function Dashboard() {
                 const property = properties.find((p) => p.id === t.propertyId)
                 return (
                   <li key={t.id} className="flex items-center gap-3.5 px-5 py-3.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white">
-                      <CalendarClock className="h-4 w-4 text-neutral-900" strokeWidth={1.5} aria-hidden="true" />
-                    </span>
+                    <MiniTile icon={CalendarClock} tileClasses={deadlineTile(t.dueDate)} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">{t.title}</p>
                       <p className="truncate text-xs text-gray-400">
@@ -461,6 +504,53 @@ function IconTile({
   )
 }
 
+/** Compact 3D icon tile for table/list rows — same handcrafted depth as the stat
+    tiles (gradient, colored glow, glass shine, bottom inner shadow, sparkle) but
+    smaller and calm: no float, just a subtle hover scale. */
+function MiniTile({
+  icon: Icon,
+  tileClasses,
+  size = "h-9 w-9 rounded-xl",
+  iconSize = "h-4 w-4",
+}: {
+  icon: LucideIcon
+  tileClasses: string
+  size?: string
+  iconSize?: string
+}) {
+  return (
+    <span
+      className={cn(
+        "mini-tile relative flex shrink-0 items-center justify-center bg-gradient-to-br text-white",
+        "transition-transform duration-300 ease-out hover:scale-105",
+        size,
+        tileClasses,
+      )}
+    >
+      {/* Glass shine — blurred white highlight along the top edge */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0.5 top-0.5 h-1.5 rounded-full bg-gradient-to-b from-white/40 via-white/15 to-transparent blur-[2px]"
+      />
+      {/* Bottom inner shadow for depth */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-2.5 rounded-b-[inherit] bg-gradient-to-t from-black/30 to-transparent"
+      />
+      {/* Tiny handcrafted sparkle dot at the top-right */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0.5 top-0.5 h-[3px] w-[3px] rounded-full bg-white/70 blur-[0.5px]"
+      />
+      <Icon
+        className={cn("relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]", iconSize)}
+        strokeWidth={1.75}
+        aria-hidden="true"
+      />
+    </span>
+  )
+}
+
 function StatCard({
   icon: Icon,
   tileClasses,
@@ -511,14 +601,11 @@ function StatCard({
 function PropertyCell({ property }: { property: Property }) {
   return (
     <div className="flex items-center gap-3">
-      <span
-        className={cn(
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br",
-          property.imageGradient,
-        )}
-      >
-        <Building2 className="h-4 w-4 text-white" strokeWidth={1.5} aria-hidden="true" />
-      </span>
+      <MiniTile
+        icon={Building2}
+        tileClasses={cn(property.imageGradient, propertyGlow(property.imageGradient))}
+        size="h-9 w-9 rounded-xl"
+      />
       <div className="min-w-0">
         <p className="truncate font-medium text-gray-900">{property.address}</p>
         <p className="text-xs text-gray-400">

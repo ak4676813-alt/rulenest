@@ -431,7 +431,8 @@
 }
 
 /* Keep the tile gradients vivid on the dark glass surface */
-.dark .icon-tile {
+.dark .icon-tile,
+.dark .mini-tile {
   filter: saturate(1.15) brightness(1.05);
 }
 
