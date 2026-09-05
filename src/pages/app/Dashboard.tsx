@@ -14,15 +14,12 @@ import {
   Landmark,
   ListChecks,
   MapPin,
-  Plus,
   Radar,
   type LucideIcon,
 } from "lucide-react"
 import AIAssistant from "../../components/AIAssistant"
-import AddPropertyModal from "../../components/AddPropertyModal"
 import StatusBadge from "../../components/StatusBadge"
 import Badge from "../../components/ui/Badge"
-import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import HealthBar from "../../components/ui/HealthBar"
 import { useData } from "../../context/DataContext"
@@ -74,7 +71,6 @@ function deadlineTone(iso: string): string {
 
 export default function Dashboard() {
   const { properties, requirements, tasks, documents, changes, activity } = useData()
-  const [addOpen, setAddOpen] = useState(false)
   const navigate = useNavigate()
 
   const stats = useMemo(() => {
@@ -111,53 +107,48 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="relative isolate">
+      {/* Subtle radial/mesh backdrop behind the grid, shown through the frosted 3D cards */}
+      <div aria-hidden="true" className="dashboard-mesh pointer-events-none absolute inset-0 -z-10" />
+
+      <div className="space-y-6">
+        {/* Header — the global "Add Property" button lives in the top bar */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">Overview of your property compliance</p>
         </div>
-        <Button icon={<Plus className="h-4 w-4 text-white" strokeWidth={1.5} />} onClick={() => setAddOpen(true)}>
-          Add Property
-        </Button>
-      </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={Building2}
-          iconClasses="border border-neutral-200 bg-white text-neutral-900"
+          iconBoxClasses="from-blue-500 to-indigo-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(37_99_235/0.5)]"
           label="Total Properties"
-          value={String(stats.totalProperties)}
+          count={stats.totalProperties}
           sub={`${stats.cityCount} Cities`}
         />
         <StatCard
           icon={ActivityIcon}
-          iconClasses="border border-neutral-200 bg-white text-neutral-900"
+          iconBoxClasses="from-emerald-500 to-teal-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(16_185_129/0.5)]"
           label="Compliance Health"
-          value={
-            <>
-              {stats.portfolioHealth}
-              <span className="text-base font-medium text-gray-400">/100</span>
-            </>
-          }
+          count={stats.portfolioHealth}
+          suffix={<span className="text-base font-medium text-gray-400">/100</span>}
           sub="↑ 7 points this month"
           subClasses="text-emerald-600"
         />
         <StatCard
           icon={AlertTriangle}
-          iconClasses="border border-neutral-200 bg-white text-neutral-900"
+          iconBoxClasses="from-amber-500 to-orange-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(245_158_11/0.55)]"
           label="Action Required"
-          value={String(stats.gapCount)}
+          count={stats.gapCount}
           sub={`${stats.overdueTasks} Overdue`}
           subClasses={stats.overdueTasks > 0 ? "text-red-600" : "text-gray-400"}
         />
         <StatCard
           icon={FileText}
-          iconClasses="border border-neutral-200 bg-white text-neutral-900"
+          iconBoxClasses="from-violet-500 to-purple-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(139_92_246/0.55)]"
           label="Documents"
-          value={String(documents.length)}
+          count={documents.length}
           sub={`${stats.expiringSoon} Expiring Soon`}
           subClasses={stats.expiringSoon > 0 ? "text-amber-600" : "text-gray-400"}
         />
@@ -165,6 +156,7 @@ export default function Dashboard() {
 
       {/* Portfolio Map */}
       <Card
+        className="card-3d"
         title="Portfolio Map"
         subtitle={`${properties.length} propert${properties.length === 1 ? "y" : "ies"} across ${
           stats.cityCount
@@ -178,6 +170,7 @@ export default function Dashboard() {
         <div className="space-y-5 lg:col-span-2">
           {/* Compliance Overview */}
           <Card
+            className="card-3d"
             title="Compliance Overview"
             subtitle="Health across your portfolio"
             noPadding
@@ -257,7 +250,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Recent Activity */}
-          <Card title="Recent Activity" noPadding>
+          <Card className="card-3d" title="Recent Activity" noPadding>
             <ul className="divide-y divide-gray-50">
               {activity.slice(0, 6).map((item) => {
                 const config = ACTIVITY_ICONS[item.type]
@@ -286,6 +279,7 @@ export default function Dashboard() {
         <div className="space-y-5">
           {/* Compliance Radar */}
           <Card
+            className="card-3d"
             title="Compliance Radar"
             noPadding
             action={
@@ -340,6 +334,7 @@ export default function Dashboard() {
 
           {/* Upcoming Deadlines */}
           <Card
+            className="card-3d"
             title="Upcoming Deadlines"
             noPadding
             action={
@@ -382,43 +377,75 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <AddPropertyModal open={addOpen} onClose={() => setAddOpen(false)} />
+      </div>
     </div>
   )
 }
 
 /* ------------------------------ Subcomponents ---------------------------- */
 
+/** Ease-out count-up for the stat numbers (~800ms, requestAnimationFrame). */
+function useCountUp(target: number, duration = 800): number {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    let raf = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - t, 3) // ease-out cubic
+      setValue(Math.round(target * eased))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
+
+  return value
+}
+
 function StatCard({
   icon: Icon,
-  iconClasses,
+  iconBoxClasses,
   label,
-  value,
+  count,
+  suffix,
   sub,
   subClasses,
 }: {
   icon: LucideIcon
-  iconClasses: string
+  iconBoxClasses: string
   label: string
-  value: ReactNode
+  count: number
+  suffix?: ReactNode
   sub: string
   subClasses?: string
 }) {
+  const value = useCountUp(count)
+
   return (
-    <Card>
+    <div className="card-3d h-full px-5 py-4 transition-all duration-300 hover:-translate-y-1 sm:px-6 sm:py-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-gray-500">{label}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-gray-900">{value}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              {value.toLocaleString()}
+            </span>
+            {suffix}
+          </p>
           <p className={cn("mt-1 text-xs", subClasses ?? "text-gray-400")}>{sub}</p>
         </div>
         <span
-          className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", iconClasses)}
+          className={cn(
+            "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white ring-1 ring-white/20",
+            iconBoxClasses,
+          )}
         >
-          <Icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
         </span>
       </div>
-    </Card>
+    </div>
   )
 }
 
