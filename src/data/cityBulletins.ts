@@ -97,7 +97,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Buildings with open violations are now inspected every 18 months.",
     category: "inspection",
   },
-,
   // ------ Denver ------
   {
     id: "den-license-window", citySlug: "denver",
@@ -144,7 +143,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Inspections now verify working heat sources and request smoke and CO detector documentation at entry.",
     category: "inspection",
   },
-,
   // ------ San Francisco ------
   {
     id: "sf-reg-fee-2027", citySlug: "san-francisco",
@@ -214,7 +212,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Penalties rise about 20% and accrue daily once a unit is unregistered for more than 90 days.",
     category: "fees",
   },
-,
   // ------ Los Angeles ------
   {
     id: "la-rso-fee-2027", citySlug: "los-angeles",
@@ -307,7 +304,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "The city now staggers BSC inspections and sends owners scheduling notices six months ahead.",
     category: "inspection",
   },
-,
   // ------ San Diego ------
   {
     id: "sd-reg-deadline", citySlug: "san-diego",
@@ -400,7 +396,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Renewals are now combined under a single deadline; expired licenses can trigger a vacate notice.",
     category: "registration",
   },
-,
   // ------ Washington DC ------
   {
     id: "dc-reg-renewal", citySlug: "washington-dc",
@@ -470,7 +465,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Detector verification now requires dated photo documentation.",
     category: "inspection",
   },
-,
   // ------ Virginia Beach ------
   {
     id: "vb-habitability", citySlug: "virginia-beach",
@@ -517,7 +511,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "CO alarms are now required near sleeping areas in multi-level rental units.",
     category: "smoke-co",
   },
-,
   // ------ Miami ------
   {
     id: "mia-license-renewal", citySlug: "miami",
@@ -587,7 +580,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "STR operators must keep a current permit record on the premises for inspection.",
     category: "registration",
   },
-,
   // ------ Atlanta ------
   {
     id: "atl-reg-renewal", citySlug: "atlanta",
@@ -657,7 +649,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Properties are scheduled for a maintenance inspection at renewal time.",
     category: "inspection",
   },
-,
   // ------ Nashville ------
   {
     id: "nas-str-renewal", citySlug: "nashville",
@@ -727,7 +718,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "New license issuance includes a safety inspection covering detectors and egress.",
     category: "inspection",
   },
-,
   // ------ Detroit ------
   {
     id: "det-license-renewal", citySlug: "detroit",
@@ -797,7 +787,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Owners now receive an inspection notice 30 days before the scheduled visit.",
     category: "inspection",
   },
-,
   // ------ Cincinnati ------
   {
     id: "cin-license-renewal", citySlug: "cincinnati",
@@ -867,7 +856,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Renewal now flags properties with an open inspection for follow-up.",
     category: "inspection",
   },
-,
   // ------ St. Louis ------
   {
     id: "stl-license-renewal", citySlug: "st-louis",
@@ -937,7 +925,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "A written smoke alarm verification is now required at lease signing.",
     category: "smoke-co",
   },
-,
   // ------ Tulsa ------
   {
     id: "tul-str-renewal", citySlug: "tulsa",
@@ -1007,7 +994,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "STR permits now trigger a periodic safety inspection covering detectors.",
     category: "inspection",
   },
-,
   // ------ Tucson ------
   {
     id: "tuc-str-renewal", citySlug: "tucson",
@@ -1077,7 +1063,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "Inspection scheduling for registered properties continues on the primary cycle.",
     category: "inspection",
   },
-,
   // ------ San Jose ------
   {
     id: "sj-reg-renewal", citySlug: "san-jose",
@@ -1147,7 +1132,6 @@ export const CITY_BULLETINS: CityBulletin[] = [
     afterText: "A written smoke alarm verification is now required at lease signing.",
     category: "smoke-co",
   },
-,
   // ------ Mesa ------
   {
     id: "mes-habitability", citySlug: "mesa",
