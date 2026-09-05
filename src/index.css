@@ -432,8 +432,27 @@
 
 /* Keep the tile gradients vivid on the dark glass surface */
 .dark .icon-tile,
-.dark .mini-tile {
+.dark .mini-tile,
+.dark .doc-tile {
   filter: saturate(1.15) brightness(1.05);
+}
+
+/* Documents page pills — brighten semantic text on dark glass (scoped via
+   `.doc-pill` so nothing else in the app changes). */
+.dark .doc-pill .text-emerald-700 {
+  color: #6ee7b7 !important;
+}
+.dark .doc-pill .text-amber-700 {
+  color: #fcd34d !important;
+}
+.dark .doc-pill .text-red-700 {
+  color: #fca5a5 !important;
+}
+.dark .doc-pill .text-orange-700 {
+  color: #fdba74 !important;
+}
+.dark .doc-pill .text-blue-700 {
+  color: #93c5fd !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -129,13 +129,6 @@ export default function Signup() {
           Log in
         </Link>
       </p>
-      <p className="mt-2 text-center text-xs text-gray-400">
-        Just exploring?{" "}
-        <Link to="/login" className="font-medium text-primary-600">
-          Use the demo account
-        </Link>{" "}
-        on the login page.
-      </p>
     </AuthShell>
   )
 }

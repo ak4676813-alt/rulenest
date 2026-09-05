@@ -27,7 +27,8 @@ connected later without restructuring the UI.
 - **Features, How It Works, Pricing, Resources, About** — full standalone
   pages.
 - **Auth** — Login, Signup, Forgot password. Prototype auth runs on
-  `localStorage`; a demo account ships out of the box.
+  `localStorage`; no demo account ships — every account starts fresh with two
+  example properties.
 
 ### Application (`/app/...`)
 
@@ -121,15 +122,13 @@ npm run dev     # start the dev server (http://localhost:5173)
 | `npm run build`   | Type-check and produce a production build |
 | `npm run preview` | Preview the production build locally      |
 
-## Demo login
+## Accounts
 
-| Field    | Value               |
-| -------- | ------------------- |
-| Email    | `demo@rulenest.com` |
-| Password | `demo123`           |
-
-You can also create an account via **Sign up** — credentials are stored in
-`localStorage` only. **Forgot password** is simulated for the prototype.
+Create an account via **Sign up** (no demo login). Credentials are stored in
+`localStorage` only. New accounts start with **two example properties** so you
+can immediately see how RuleNest works — the example data is flagged on the
+Dashboard and can be removed in one click, then replaced with your own.
+**Forgot password** is simulated for the prototype.
 
 ## Environment variables
 
@@ -163,7 +162,8 @@ All reads/writes flow through three places:
 
 ## Notes & disclaimer
 
-- All properties, people, documents and regulatory items are **demo data**.
+- All properties, people, documents and regulatory items in the seed dataset are
+  **demo data**.
 - AI responses in the prototype are **simulated in the browser**.
 - *RuleNest provides compliance information and workflow assistance and does
   not provide legal advice. Always verify requirements with the relevant

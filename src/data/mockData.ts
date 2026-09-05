@@ -8,7 +8,6 @@ import type {
   RegulatoryChange,
   ReportRecord,
   Requirement,
-  StoredAccount,
 } from "../types"
 
 /* ------------------------------------------------------------------------ */
@@ -16,17 +15,6 @@ import type {
 /*  used to make the prototype feel real. It does not represent real         */
 /*  people, properties, or official government records.                      */
 /* ------------------------------------------------------------------------ */
-
-export const demoAccount: StoredAccount = {
-  id: "user_demo",
-  name: "John Anderson",
-  email: "demo@rulenest.com",
-  password: "demo123",
-  role: "Owner",
-  plan: "portfolio",
-  avatarColor: "bg-primary-600",
-  createdAt: "2026-01-12T09:00:00.000Z",
-}
 
 /* ------------------------------ Properties ------------------------------ */
 
@@ -1102,17 +1090,272 @@ const reports: ReportRecord[] = [
   { id: "rep_exp", type: "Document Expiration Report", title: "Document Expiration Report — Q3 2026", createdAt: "2026-08-02T09:00:00.000Z" },
 ]
 
-/* --------------------------------- Seed ---------------------------------- */
+/* -------------------------- First-run example seed ------------------------ *
+   Fresh signups start with exactly TWO example properties (no full demo
+   portfolio) so a first-time user can immediately see how RuleNest works.
+   Every entity created here is flagged `example: true` so the Dashboard
+   banner can delete it all in one click, together with its documents and
+   tasks. */
 
-export function buildSeedData(): AppData {
+function daysFromNow(days: number): string {
+  return new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10)
+}
+
+function atDaysFromNow(days: number): string {
+  return new Date(Date.now() + days * 86_400_000).toISOString()
+}
+
+export function buildEmptyData(): AppData {
   return {
-    properties,
-    requirements,
-    documents: buildDocuments(),
-    tasks,
-    changes,
-    activity,
-    inbox,
-    reports,
+    properties: [],
+    requirements: [],
+    documents: [],
+    tasks: [],
+    changes: [],
+    activity: [],
+    inbox: [],
+    reports: [],
   }
+}
+
+export function buildExampleSeedData(): AppData {
+  const exampleProperties: Property[] = [
+    {
+      id: "prop_example_boston",
+      address: "123 Example Street",
+      city: "Boston",
+      state: "MA",
+      zip: "02118",
+      units: 2,
+      healthScore: 76,
+      status: "fair",
+      nextDeadline: daysFromNow(30),
+      imageGradient: "from-indigo-500 via-blue-500 to-sky-400",
+      createdAt: atDaysFromNow(0),
+      example: true,
+      dna: {
+        propertyType: "Multi-family",
+        units: 2,
+        yearBuilt: 1985,
+        rentalType: "Long-term rental",
+        occupancy: "Tenant-occupied",
+        ownerOccupied: false,
+        floors: 2,
+        sqft: 2600,
+        parking: "Street",
+        amenities: [],
+      },
+    },
+    {
+      id: "prop_example_chicago",
+      address: "456 Sample Avenue",
+      city: "Chicago",
+      state: "IL",
+      zip: "60601",
+      units: 1,
+      healthScore: 88,
+      status: "excellent",
+      nextDeadline: daysFromNow(45),
+      imageGradient: "from-sky-500 via-cyan-500 to-teal-400",
+      createdAt: atDaysFromNow(0),
+      example: true,
+      dna: {
+        propertyType: "Single-family",
+        units: 1,
+        yearBuilt: 1998,
+        rentalType: "Long-term rental",
+        occupancy: "Tenant-occupied",
+        ownerOccupied: false,
+        floors: 1,
+        sqft: 1500,
+        parking: "Driveway",
+        amenities: [],
+      },
+    },
+  ]
+
+  const exampleRequirements: Requirement[] = example_requirements()
+  const exampleDocuments: DocumentItem[] = example_documents()
+  const exampleTasks: ComplianceTask[] = example_tasks()
+
+  return {
+    properties: exampleProperties,
+    requirements: exampleRequirements,
+    documents: exampleDocuments,
+    tasks: exampleTasks,
+    changes: [],
+    activity: example_activity(),
+    inbox: [],
+    reports: [],
+  }
+}
+function example_requirements(): Requirement[] {
+  return [
+    {
+      id: "req_ex_boston_reg",
+      propertyId: "prop_example_boston",
+      name: "Rental Registration",
+      category: "Registration",
+      status: "due-soon",
+      deadline: daysFromNow(30),
+      whyItApplies:
+        "Boston requires rental properties to be registered and inspected. Keep your registration certificate up to date.",
+      requiredEvidence: ["Registration certificate"],
+      officialSource: "City of Boston — Inspectional Services",
+      action: "Upload certificate",
+      example: true,
+    },
+    {
+      id: "req_ex_boston_smoke",
+      propertyId: "prop_example_boston",
+      name: "Smoke/CO Certification",
+      category: "Safety",
+      status: "missing-evidence",
+      whyItApplies:
+        "Massachusetts requires certified smoke and carbon monoxide alarms in residential rentals.",
+      requiredEvidence: ["Smoke/CO certificate"],
+      officialSource: "Massachusetts Fire Marshal",
+      action: "Upload certificate",
+      example: true,
+    },
+    {
+      id: "req_ex_chicago_reg",
+      propertyId: "prop_example_chicago",
+      name: "Rental License",
+      category: "Registration",
+      status: "missing-evidence",
+      whyItApplies:
+        "Chicago requires residential landlords to hold a rental license for each property.",
+      requiredEvidence: ["Rental license certificate"],
+      officialSource: "City of Chicago — Dept. of Buildings",
+      action: "Upload certificate",
+      example: true,
+    },
+    {
+      id: "req_ex_chicago_smoke",
+      propertyId: "prop_example_chicago",
+      name: "Smoke/CO Alarms",
+      category: "Safety",
+      status: "due-soon",
+      deadline: daysFromNow(45),
+      whyItApplies:
+        "Chicago requires working smoke and carbon monoxide detectors in all rental units.",
+      requiredEvidence: ["Smoke/CO certificate"],
+      officialSource: "City of Chicago — Fire Dept.",
+      action: "Upload certificate",
+      example: true,
+    },
+  ]
+}
+
+function example_documents(): DocumentItem[] {
+  return [
+    {
+      id: "doc_ex_boston_reg",
+      name: "Rental_Registration_Boston.pdf",
+      propertyId: "prop_example_boston",
+      category: "Registrations",
+      status: "verified",
+      size: "780 KB",
+      uploadedAt: atDaysFromNow(-20),
+      expiresAt: daysFromNow(310),
+      matchedRequirement: "Rental Registration",
+      confidence: 96,
+      example: true,
+    },
+    {
+      id: "doc_ex_boston_smoke",
+      name: "Smoke_CO_Certificate_Boston.pdf",
+      propertyId: "prop_example_boston",
+      category: "Certificates",
+      status: "verified",
+      size: "940 KB",
+      uploadedAt: atDaysFromNow(-35),
+      expiresAt: daysFromNow(180),
+      example: true,
+    },
+    {
+      id: "doc_ex_chicago_lic",
+      name: "Rental_License_Chicago.pdf",
+      propertyId: "prop_example_chicago",
+      category: "Registrations",
+      status: "verified",
+      size: "700 KB",
+      uploadedAt: atDaysFromNow(-12),
+      expiresAt: daysFromNow(350),
+      matchedRequirement: "Rental License",
+      confidence: 94,
+      example: true,
+    },
+    {
+      id: "doc_ex_chicago_smoke",
+      name: "Smoke_CO_Certificate_Chicago.pdf",
+      propertyId: "prop_example_chicago",
+      category: "Certificates",
+      status: "pending",
+      size: "610 KB",
+      uploadedAt: atDaysFromNow(-3),
+      matchedRequirement: "Smoke/CO Alarms",
+      confidence: 88,
+      example: true,
+    },
+  ]
+}
+
+function example_tasks(): ComplianceTask[] {
+  return [
+    {
+      id: "task_ex_boston_ins",
+      title: "Add landlord insurance policy — 123 Example Street",
+      propertyId: "prop_example_boston",
+      dueDate: daysFromNow(30),
+      status: "open",
+      requirement: "Landlord Insurance",
+      priority: "high",
+      createdAt: atDaysFromNow(-8),
+      example: true,
+    },
+    {
+      id: "task_ex_boston_smoke",
+      title: "Renew smoke/CO certificate — 123 Example Street",
+      propertyId: "prop_example_boston",
+      dueDate: daysFromNow(60),
+      status: "open",
+      requirement: "Smoke/CO Certification",
+      priority: "medium",
+      createdAt: atDaysFromNow(-10),
+      example: true,
+    },
+    {
+      id: "task_ex_chicago_lic",
+      title: "Upload rental license — 456 Sample Avenue",
+      propertyId: "prop_example_chicago",
+      dueDate: daysFromNow(45),
+      status: "open",
+      requirement: "Rental License",
+      priority: "medium",
+      createdAt: atDaysFromNow(-6),
+      example: true,
+    },
+  ]
+}
+
+function example_activity(): ActivityItem[] {
+  return [
+    {
+      id: "act_ex_1",
+      type: "property",
+      text: "Welcome to RuleNest — we added 2 example properties to get you started.",
+      at: atDaysFromNow(0),
+      example: true,
+    },
+    {
+      id: "act_ex_2",
+      type: "document",
+      text: "Document uploaded: Rental_Registration_Boston.pdf",
+      propertyId: "prop_example_boston",
+      at: atDaysFromNow(-20),
+      example: true,
+    },
+  ]
 }

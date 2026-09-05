@@ -52,6 +52,8 @@ export interface Property {
   imageGradient: string
   dna: PropertyDNA
   createdAt: string
+  /** True for the 2 first-run example properties seeded on new signup. */
+  example?: boolean
 }
 
 export type RequirementStatus =
@@ -76,6 +78,8 @@ export interface Requirement {
   lastVerified?: string
   /** Next best action label. */
   action: string
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export type DocumentStatus =
@@ -104,6 +108,8 @@ export interface DocumentItem {
   expiresAt?: string
   matchedRequirement?: string
   confidence?: number
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export type TaskStatus = "open" | "completed" | "snoozed"
@@ -119,6 +125,8 @@ export interface ComplianceTask {
   createdAt: string
   completedAt?: string
   snoozedUntil?: string
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export interface RegulatoryChange {
@@ -135,6 +143,8 @@ export interface RegulatoryChange {
   before: { label: string; text: string }
   after: { label: string; text: string }
   read: boolean
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export type ActivityType =
@@ -151,6 +161,8 @@ export interface ActivityItem {
   text: string
   propertyId?: string
   at: string
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export interface InboxItem {
@@ -174,6 +186,8 @@ export interface ReportRecord {
   title: string
   createdAt: string
   propertyId?: string
+  /** True when created as part of the first-run example seed. */
+  example?: boolean
 }
 
 export interface AppData {

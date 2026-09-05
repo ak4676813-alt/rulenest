@@ -1,5 +1,5 @@
 import type { AppData, StoredAccount } from "../types"
-import { buildSeedData, demoAccount } from "../data/mockData"
+import { buildEmptyData, buildExampleSeedData } from "../data/mockData"
 
 /* ------------------------------------------------------------------------ */
 /*  Persistence layer. In the prototype everything lives in localStorage;    */
@@ -26,9 +26,9 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 export function loadData(): AppData {
   const existing = safeParse<AppData | null>(localStorage.getItem(DATA_KEY), null)
   if (existing && Array.isArray(existing.properties)) return existing
-  const seed = buildSeedData()
-  saveData(seed)
-  return seed
+  // No stored data yet — the first signed-in user gets the example seed from
+  // DataProvider. Nothing is written here so logged-out visitors stay empty.
+  return buildEmptyData()
 }
 
 export function saveData(data: AppData): void {
@@ -36,7 +36,7 @@ export function saveData(data: AppData): void {
 }
 
 export function resetData(): AppData {
-  const seed = buildSeedData()
+  const seed = buildExampleSeedData()
   saveData(seed)
   return seed
 }
@@ -45,12 +45,9 @@ export function resetData(): AppData {
 
 export function loadAccounts(): StoredAccount[] {
   const accounts = safeParse<StoredAccount[]>(localStorage.getItem(ACCOUNTS_KEY), [])
-  if (!accounts.some((a) => a.email === demoAccount.email)) {
-    const next = [demoAccount, ...accounts]
-    saveAccounts(next)
-    return next
-  }
-  return accounts
+  // Strip any legacy demo account persisted from an older version — the demo
+  // login path is fully removed.
+  return accounts.filter((a) => a.email !== "demo@rulenest.com" && a.id !== "user_demo")
 }
 
 export function saveAccounts(accounts: StoredAccount[]): void {

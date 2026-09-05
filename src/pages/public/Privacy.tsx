@@ -41,9 +41,9 @@ export default function Privacy() {
             <div>
               <h2 className="text-xl font-bold tracking-tight text-gray-900">Cookies and localStorage</h2>
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                RuleNest uses localStorage to persist your session, theme preference, and demo data.
-                We do not use third-party ad trackers. You can clear this data at any time from your
-                browser settings, which fully resets the demo.
+                RuleNest uses localStorage to persist your session, theme preference, and your
+                account's data (properties, documents, and tasks). We do not use third-party ad trackers.
+                You can clear this data at any time from your browser settings.
               </p>
             </div>
             <div>

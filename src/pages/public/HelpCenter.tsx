@@ -36,8 +36,8 @@ const FAQS = [
     a: "In this prototype, all of your data — accounts, properties, documents, and tasks — lives in your browser's localStorage. Nothing is uploaded to a server. Clearing browser data resets the demo.",
   },
   {
-    q: "How do I reset the demo data?",
-    a: "Open Settings → Data and click 'Reset demo data'. This restores the original sample portfolio. You can also clear your browser's site data to start completely fresh.",
+    q: "How do I reset the starter example data?",
+    a: "Open Settings → Data and click 'Reset example data'. This restores the two starter example properties. You can also clear your browser's site data to start completely fresh.",
   },
   {
     q: "Can I change my profile or password?",

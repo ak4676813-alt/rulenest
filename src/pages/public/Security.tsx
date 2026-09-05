@@ -11,7 +11,7 @@ const PILLARS = [
   },
   {
     icon: FileCheck2,
-    title: "Demo data stays in your browser",
+    title: "Your data stays in your browser",
     text: "In this prototype, your accounts, properties, documents, and tasks live only in your browser's localStorage. Nothing is uploaded to a server, and clearing site data removes it permanently.",
   },
   {
@@ -24,7 +24,7 @@ const PILLARS = [
 export default function Security() {
   usePageMeta(
     "Security — RuleNest",
-    "How RuleNest protects your data: encryption in transit, demo data stored only in your browser, and a responsible disclosure program at security@getrulenest.com.",
+    "How RuleNest protects your data: encryption in transit, your data stored only in your browser, and a responsible disclosure program at security@getrulenest.com.",
   )
 
   return (
@@ -34,7 +34,7 @@ export default function Security() {
           <SectionHeading
             eyebrow="Security"
             title="Your data, protected"
-            description="RuleNest is built with security in mind — from encrypted connections to keeping your demo data entirely in your own browser."
+            description="RuleNest is built with security in mind — from encrypted connections to keeping your data entirely in your own browser."
           />
         </div>
       </section>

@@ -2,7 +2,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -17,7 +19,9 @@ import type {
   Requirement,
 } from "../types"
 import { loadData, resetData, saveData } from "../lib/storage"
+import { buildExampleSeedData } from "../data/mockData"
 import { propertyStatusFromScore, uid } from "../lib/utils"
+import { useAuth } from "./AuthContext"
 
 export interface NewPropertyInput {
   address: string
@@ -55,6 +59,10 @@ interface DataContextValue extends AppData {
   markChangeRead: (id: string) => void
   addReport: (report: Omit<ReportRecord, "id" | "createdAt">) => void
   resetAll: () => void
+  /** True while the first-run example data still exists. */
+  hasExamples: boolean
+  /** Deletes every example-flagged property, document, task, and requirement. */
+  removeExamples: () => void
 }
 
 const DataContext = createContext<DataContextValue | null>(null)
@@ -84,7 +92,27 @@ function pushActivity(
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
   const [data, setData] = useState<AppData>(loadData)
+
+  // Seed a fresh workspace for a NEW user exactly once (first sign-in). Existing
+  // sessions keep the old data untouched. If data already exists in storage we
+  // don't touch it — so new signups get the 2-example seed, returning users keep
+  // their own data, and the demo is fully gone.
+  const seededUserIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!user) return
+    if (seededUserIdRef.current === user.id) return
+    seededUserIdRef.current = user.id
+
+    // Only seed when there are no persisted properties yet — i.e. a new account.
+    const existing = loadData()
+    if (existing.properties.length === 0) {
+      const seed = buildExampleSeedData()
+      saveData(seed)
+      setData(seed)
+    }
+  }, [user])
 
   const update = useCallback((fn: (current: AppData) => AppData) => {
     setData((current) => {
@@ -401,6 +429,51 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setData(resetData())
   }, [])
 
+  // Deletes every example-flagged property, document, task, requirement, and
+  // activity item — nothing else is touched.
+  const removeExamples = useCallback(() => {
+    setData((current) => {
+      const exampleIds = current.properties.filter((p) => p.example).map((p) => p.id)
+      const exampleSet = new Set(exampleIds)
+      const next: AppData = {
+        ...current,
+        properties: current.properties.filter((p) => !p.example),
+        requirements: current.requirements.filter(
+          (r) => !r.example && !exampleSet.has(r.propertyId),
+        ),
+        documents: current.documents.filter(
+          (d) => !d.example && !exampleSet.has(d.propertyId),
+        ),
+        tasks: current.tasks.filter(
+          (t) => !t.example && !exampleSet.has(t.propertyId),
+        ),
+        activity: current.activity.filter(
+          (a) => !a.example && (!a.propertyId || !exampleSet.has(a.propertyId)),
+        ),
+        inbox: current.inbox.filter(
+          (i) => !i.detectedPropertyId || !exampleSet.has(i.detectedPropertyId),
+        ),
+        changes: current.changes
+          .filter((c) => !c.example)
+          .map((c) => ({
+            ...c,
+            affectedPropertyIds: c.affectedPropertyIds.filter((id) => !exampleSet.has(id)),
+          })),
+        reports: current.reports.filter(
+          (r) => !r.example && (!r.propertyId || !exampleSet.has(r.propertyId)),
+        ),
+      }
+      saveData(next)
+      return next
+    })
+  }, [])
+
+  const hasExamples =
+    data.properties.some((p) => p.example) ||
+    data.documents.some((d) => d.example) ||
+    data.tasks.some((t) => t.example) ||
+    data.requirements.some((r) => r.example)
+
   const unreadInboxCount = data.inbox.filter((i) => !i.read && !i.archived).length
 
   const value = useMemo<DataContextValue>(
@@ -423,6 +496,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       markChangeRead,
       addReport,
       resetAll,
+      hasExamples,
+      removeExamples,
     }),
     [
       data,
@@ -443,6 +518,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       markChangeRead,
       addReport,
       resetAll,
+      hasExamples,
+      removeExamples,
     ],
   )
 

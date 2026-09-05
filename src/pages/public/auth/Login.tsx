@@ -15,12 +15,6 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  function fillDemo() {
-    setEmail("demo@rulenest.com")
-    setPassword("demo123")
-    setError(null)
-  }
-
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
@@ -39,24 +33,6 @@ export default function Login() {
 
   return (
     <AuthShell title="Welcome back" subtitle="Log in to your RuleNest workspace.">
-      {/* Demo account — clearly labeled prototype content */}
-      <div className="mb-6 rounded-xl border border-primary-100 bg-primary-50 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-primary-900">Demo account</p>
-            <p className="mt-0.5 text-xs text-primary-700">demo@rulenest.com · demo123</p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fillDemo}
-            className="border-primary-200 bg-white text-primary-700 hover:border-primary-300"
-          >
-            Use demo
-          </Button>
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Field label="Email" htmlFor="login-email">
           <Input

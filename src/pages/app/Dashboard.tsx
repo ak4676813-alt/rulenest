@@ -14,15 +14,21 @@ import {
   Landmark,
   ListChecks,
   MapPin,
+  Plus,
   Radar,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react"
 import AIAssistant from "../../components/AIAssistant"
+import AddPropertyModal from "../../components/AddPropertyModal"
 import StatusBadge from "../../components/StatusBadge"
 import Badge from "../../components/ui/Badge"
+import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import HealthBar from "../../components/ui/HealthBar"
+import { useAuth } from "../../context/AuthContext"
 import { useData } from "../../context/DataContext"
+import { useToast } from "../../context/ToastContext"
 import { cn, daysUntil, formatDate, relativeDeadline, timeAgo } from "../../lib/utils"
 import type { ActivityItem, Property, RegulatoryChange } from "../../types"
 
@@ -122,8 +128,11 @@ function radarSeverityTile(severity: RegulatoryChange["severity"]): string {
 }
 
 export default function Dashboard() {
-  const { properties, requirements, tasks, documents, changes, activity } = useData()
+  const { properties, requirements, tasks, documents, changes, activity, hasExamples, removeExamples } = useData()
+  const { user } = useAuth()
+  const { toast } = useToast()
   const navigate = useNavigate()
+  const [addOpen, setAddOpen] = useState(false)
 
   const stats = useMemo(() => {
     const totalProperties = properties.length
@@ -164,6 +173,43 @@ export default function Dashboard() {
       <div aria-hidden="true" className="dashboard-mesh pointer-events-none absolute inset-0 -z-10" />
 
       <div className="space-y-6">
+        {/* First-run example data banner — dismissible, one-click cleanup */}
+        {hasExamples && user && (
+          <div className="card-3d flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-400 via-indigo-500 to-violet-600 text-white shadow-[0_8px_20px_-6px_rgba(79,70,229,0.6)]">
+                <Sparkles className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900">
+                  These are 2 example properties to show you how RuleNest works. Delete them anytime
+                  and add your own.
+                </p>
+                <p className="mt-0.5 text-xs text-gray-500">They're only in this browser — nothing is uploaded.</p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button size="sm" icon={<Plus className="h-4 w-4" />} onClick={() => setAddOpen(true)}>
+                Add my property
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  removeExamples()
+                  toast({
+                    variant: "success",
+                    title: "Example data removed",
+                    description: "The example properties were deleted. You're ready to add your own.",
+                  })
+                }}
+              >
+                Remove examples
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Header — the global "Add Property" button lives in the top bar */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Dashboard</h1>
@@ -429,6 +475,8 @@ export default function Dashboard() {
       </div>
 
       </div>
+
+      <AddPropertyModal open={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   )
 }

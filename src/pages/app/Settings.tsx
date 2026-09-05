@@ -75,8 +75,6 @@ export default function Settings() {
 
   const [passwords, setPasswords] = useState({ current: "", next: "", confirm: "" })
 
-  const isDemo = user?.email === "demo@rulenest.com"
-
   function updateSetting<K extends keyof SettingsState>(key: K, value: SettingsState[K]) {
     setSettings((prev) => ({ ...prev, [key]: value }))
   }
@@ -96,7 +94,6 @@ export default function Settings() {
   }
 
   function changePassword() {
-    if (isDemo) return
     const account = loadAccounts().find((a) => a.id === user?.id)
     if (!account || account.password !== passwords.current) {
       toast({ variant: "error", title: "Current password is incorrect" })
@@ -175,7 +172,7 @@ export default function Settings() {
                   <Field label="Full name" htmlFor="set-name">
                     <Input id="set-name" value={profile.name} onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))} />
                   </Field>
-                  <Field label="Email" htmlFor="set-email" hint={isDemo ? "Demo account email can't be changed." : undefined}>
+                  <Field label="Email" htmlFor="set-email">
                     <Input id="set-email" value={user?.email ?? ""} disabled />
                   </Field>
                   <Field label="Phone" htmlFor="set-phone">
@@ -217,13 +214,7 @@ export default function Settings() {
 
           {section === "security" && (
             <Card title="Security" subtitle="Password and sign-in">
-              {isDemo ? (
-                <p className="rounded-xl border border-primary-100 bg-primary-50 p-4 text-sm text-primary-800">
-                  Password changes are disabled for the demo account. Create your own account to
-                  manage credentials.
-                </p>
-              ) : (
-                <div className="space-y-4">
+              <div className="space-y-4">
                   <Field label="Current password" htmlFor="set-current">
                     <Input id="set-current" type="password" autoComplete="current-password" value={passwords.current} onChange={(e) => setPasswords((p) => ({ ...p, current: e.target.value }))} />
                   </Field>
@@ -241,7 +232,6 @@ export default function Settings() {
                     </Button>
                   </div>
                 </div>
-              )}
               <div className="mt-6 border-t border-gray-100 pt-5">
                 <p className="text-sm font-medium text-gray-900">Active session</p>
                 <p className="mt-1 flex items-center gap-2 text-sm text-gray-500">
@@ -331,8 +321,10 @@ export default function Settings() {
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50/50 p-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Reset demo data</p>
-                    <p className="text-xs text-gray-500">Restore the original sample portfolio. This cannot be undone.</p>
+                    <p className="text-sm font-medium text-gray-900">Reset example data</p>
+                    <p className="text-xs text-gray-500">
+                      Restore the two starter example properties. This cannot be undone.
+                    </p>
                   </div>
                   <Button
                     variant="danger"
@@ -340,7 +332,7 @@ export default function Settings() {
                     icon={<RefreshCw className="h-4 w-4" />}
                     onClick={() => {
                       data.resetAll()
-                      toast({ variant: "info", title: "Demo data reset", description: "The original sample portfolio is back." })
+                      toast({ variant: "info", title: "Example data reset", description: "The two starter example properties are back." })
                     }}
                   >
                     Reset data

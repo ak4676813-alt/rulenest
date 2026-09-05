@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!account || account.password !== password) {
       return {
         ok: false,
-        error: "Invalid email or password. Try the demo account: demo@rulenest.com / demo123",
+        error: "Invalid email or password.",
       }
     }
     saveSession(account.id)
