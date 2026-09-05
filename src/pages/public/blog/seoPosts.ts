@@ -362,4 +362,199 @@ export const SEO_POSTS: BlogPostData[] = [
       { label: "Boston compliance", to: "/compliance/boston" },
     ],
   },
+  {
+    slug: "who-is-responsible-for-smoke-detectors-landlord-or-tenant",
+    title: "Who Is Responsible for Smoke Detectors in a Rental? Landlord vs. Tenant (2026)",
+    excerpt:
+      "Who pays for, installs, and tests smoke detectors in a rental? The landlord vs. tenant split, plus what happens when a detector is missing in a fire.",
+    date: "September 5, 2026",
+    readTime: "6 min read",
+    author: "Ankit Kumar, founder of RuleNest",
+    sections: [
+      {
+        heading: "The quick answer",
+        paragraphs: [
+          "In most US jurisdictions the landlord is responsible for installing smoke detectors and making sure they work at move-in, and the tenant is responsible for regular testing, battery changes, and reporting malfunctions during the tenancy. That split varies by city and state, so the first thing to do is check your local code — the rest of this article explains why the split exists and what each side actually owes.",
+          "It is not usually illegal to hand a working detector over at move-in, but it is almost always the landlord's obligation to provide one. The moment a detector is missing, dead, or disabled, the risk shifts from a maintenance annoyance to a liability question that can end up in court.",
+        ],
+      },
+      {
+        heading: "Who is responsible for installing smoke detectors?",
+        paragraphs: [
+          "Landlords install. Nearly every state building and fire code assigns the installation duty to the owner of the rental property. That means purchasing a code-compliant alarm, mounting it in the required locations — every level, outside sleeping areas, and in some cities inside each bedroom — and handing over a unit that meets the standard at the start of the lease.",
+          "If the tenant moves in and a detector is missing, that is a landlord failure, not a tenant failure. Many cities send an inspector or the certificate-of-occupancy process to verify alarms exist before a unit can be occupied, which is why the installation burden stays with the property owner.",
+        ],
+      },
+      {
+        heading: "Who pays for a new smoke detector?",
+        paragraphs: [
+          "The landlord pays for the detector itself and for replacing an expired or failing unit. Detectors have a 10-year service life in most codes — printed on the back — and replacing them is a capital maintenance item, not a tenant convenience.",
+          "There is one genuinely common split: batteries. Many leases assign battery changes to the tenant during the tenancy, because a dead battery is usually discovered at 2am and the fastest fix is the occupant. Some states now mandate sealed, non-removable 10-year batteries precisely so this argument disappears. Whatever your lease says, both parties should know who tests what and when.",
+        ],
+      },
+      {
+        heading: "The landlord vs. tenant responsibility split",
+        paragraphs: ["Here is the practical division that covers most jurisdictions."],
+        list: [
+          "Landlord — purchase the detector, install it in code-required locations",
+          "Landlord — ensure working detectors at move-in and at each new tenancy",
+          "Landlord — replace expired or defective units and keep the certificate current",
+          "Tenant — test detectors monthly and report failures promptly",
+          "Tenant — change batteries during the tenancy where the lease says so",
+          "Tenant — never disable a detector or remove it for cosmetic reasons",
+          "Both — know the city/state rule, because the split is not identical everywhere",
+        ],
+      },
+      {
+        heading: "Certificates, inspections, and proving compliance",
+        paragraphs: [
+          "Several cities require documented proof that detectors were installed or inspected — a certificate tied to the unit or a dated inspection record. When that certificate expires, the building is technically out of compliance even if every alarm works.",
+          "The landlord owns this paper trail. Keep the certificate, the dated test record, and the replacement receipts together. That is exactly what an [Evidence Vault](/guides/proof-of-compliance) is for, and it makes a debate about who did what much easier to settle.",
+        ],
+      },
+      {
+        heading: "What happens when a detector is missing in a fire",
+        paragraphs: [
+          "If a fire injures a tenant and the unit had no working detector, the landlord can face a negligence lawsuit, a building-code citation, and an insurance claim denial or subrogation fight. Juries and adjusters are unforgiving when a $20 device would have changed the outcome.",
+          "Insurance matters more than landlords expect. A policy can deny a fire claim if the loss occurred while the building was out of compliance — and a missing detector is the most common compliance hook. The landlord's own coverage is often what is at risk, not just the tenant's recovery.",
+        ],
+      },
+      {
+        heading: "City examples: Chicago and Boston",
+        paragraphs: [
+          "Chicago requires working smoke and CO detectors in all rental units, with the landlord responsible for installation and maintenance and tenants responsible for notifying the owner of defects. Boston enforces detector requirements through the sanitary-code inspection cycle and certificate process, so an expired certificate surfaces at inspection regardless of who installed the alarm. See the [Chicago compliance page](/compliance/chicago) and the [Boston compliance page](/compliance/boston) for the local detail.",
+        ],
+      },
+      {
+        heading: "5-point action checklist for landlords",
+        paragraphs: ["Run through this once per unit, then annually."],
+        list: [
+          "Confirm your city's detector placement and certificate rules",
+          "Install code-compliant detectors before the tenant moves in",
+          "Test every alarm and replace any that are end-of-life",
+          "Keep the certificate and a dated test record in your evidence files",
+          "Put the next certificate expiry on your reminder calendar",
+        ],
+      },
+      {
+        heading: "FAQ: the questions tenants actually ask",
+        paragraphs: ["The short answers to the four questions that come up most."],
+        list: [
+          "\"Is outfitting the rental with smoke detectors the tenant's responsibility?\" — No, in almost every jurisdiction the landlord outfits the rental at move-in; a tenant who paid out of pocket can usually request reimbursement or a rent credit, and should keep the receipt.",
+          "\"Is it illegal not to provide smoke alarms?\" — In most states and cities, yes — an occupied rental without the required detectors is a code violation and can trigger fines, inspections, and liability.",
+          "\"Can you sue a landlord for not providing smoke alarms?\" — Yes, if the absence contributed to an injury or property loss, through a negligence suit or a code-violation claim; evidence of notice to the landlord is critical.",
+          "\"Is it my landlord's responsibility to pay for a new smoke detector?\" — Yes — the landlord owns purchase and replacement; the tenant's typical share is testing and batteries during the tenancy, where the lease assigns it.",
+        ],
+      },
+      {
+        heading: "The bottom line",
+        paragraphs: [
+          "Landlords install and maintain; tenants test and report. When everyone knows the split, detectors stay working and the liability question never comes up. For the full detector rulebook, see [smoke and CO detector laws for landlords](/blog/smoke-co-detector-laws-2026) and what to do when the [certificate expires](/blog/smoke-detector-certificate-expired).",
+          "RuleNest turns this into tracked requirements with reminders and a certificate vault. [Start free](/signup) and map your first property — the detector certificate expiry will show up before it lapses.",
+        ],
+      },
+      {
+        heading: "Verify with official local sources",
+        paragraphs: [
+          "State and city detector rules change, and the landlord-tenant split can vary by jurisdiction. Always verify the current requirement with your local building or fire department before relying on this article.",
+        ],
+      },
+    ],
+    relatedLinks: [
+      { label: "Smoke & CO detector laws for landlords", to: "/blog/smoke-co-detector-laws-2026" },
+      { label: "Smoke detector certificate expired", to: "/blog/smoke-detector-certificate-expired" },
+      { label: "Proof of compliance guide", to: "/guides/proof-of-compliance" },
+      { label: "Try RuleNest free", to: "/signup" },
+    ],
+  },
+  {
+    slug: "landlord-record-keeping-what-to-document",
+    title: "Should Landlords Document Everything? The Photo & Record System That Wins Disputes",
+    excerpt:
+      "Move-in photos, repair receipts, tenant communications, certificates — what to document, how to build a dated photo system, and how long to keep it.",
+    date: "September 5, 2026",
+    readTime: "6 min read",
+    author: "Ankit Kumar, founder of RuleNest",
+    sections: [
+      {
+        heading: "Why documentation wins",
+        paragraphs: [
+          "Every landlord dispute comes down to one question: what can you prove? A security deposit argument, an insurance claim after a leak, or a city audit of your certificates is decided by the paper trail — photos, receipts, dates, and messages. The landlord with records usually wins; the landlord without them pays.",
+          "Documentation is not busywork. It is the difference between a $200 deposit deduction that holds up and a $2,000 hearing where the tenant's word is as good as yours. The cost is a few minutes per event, and the payoff is peace of mind on every future conflict.",
+        ],
+      },
+      {
+        heading: "The 7 things to always document",
+        paragraphs: ["Seven record categories cover almost every dispute that touches a rental."],
+        list: [
+          "Move-in / move-out photos — the single highest-value evidence you will ever collect",
+          "Repairs and maintenance — receipts, invoices, and after photos with dates",
+          "Tenant communications — every notice, request, and agreement in writing",
+          "Payments — rent received, deposits paid, and any fee assessed, with dates",
+          "Certificates and proof — registration, detector, and inspection certificates",
+          "Inspection logs — dated records of each unit walk-through and who attended",
+          "Lease updates — signed amendments, renewals, and addenda for every change",
+        ],
+      },
+      {
+        heading: "How to build a dated photo system room-by-room",
+        paragraphs: [
+          "The classic failure is a phone full of photos with no date, no room label, and no consistency. A usable system is mechanical: one walk-through per event, room-by-room, with a timestamped photo of each surface plus the meter or entry as your anchor.",
+          "Move-in day: capture every room, every wall, and every existing mark — then have the tenant sign a condition checklist that matches the photos. Move-out day: repeat the same route so the two sets line up. A simple naming pattern like 'property-date-room' makes any single photo findable two years later.",
+        ],
+      },
+      {
+        heading: "How long to keep each record",
+        paragraphs: ["Retention should match the legal exposure, not your inbox space."],
+        list: [
+          "Move-in/move-out photos and checklists — keep until the deposit dispute window closes, plus one lease cycle",
+          "Lease and signed addenda — the full tenancy plus the statute of limitations for claims (often 3–6 years)",
+          "Repair receipts and warranties — the useful life of the item, or as long as you own the property for tax records",
+          "Certificates and inspection logs — current cycle plus the prior cycle, so expiration history is provable",
+          "Communications about damage or rules — until the related dispute is settled and closed",
+        ],
+      },
+      {
+        heading: "What happens without records",
+        paragraphs: [
+          "Without a dated move-in photo, normal wear and damage are indistinguishable, and the deposit deduction loses. Without a repair receipt, the 'I fixed it twice' defense in a habitability dispute is just a story. Without a certificate, a compliance audit treats the requirement as missing even when the work was done.",
+          "The painful pattern is the same every time: the landlord was right, and the records were not there to prove it.",
+        ],
+      },
+      {
+        heading: "How an evidence vault with expiry tracking helps",
+        paragraphs: [
+          "A compliance vault changes the game because it holds the date-driven records — certificates, inspection logs, and receipts — and reminds you before they expire. Move-in photos still live in your phone or drive, but the regulatory proof lives in a system that refuses to let a renewal lapse.",
+          "That is the RuleNest model: property-level requirements, a documents vault, and reminders 90, 60, and 30 days before each deadline. It pairs a practical photo habit with the one thing landlords forget — the certificate on the wall has an expiration date.",
+        ],
+      },
+      {
+        heading: "FAQ: landlords' record-keeping questions",
+        paragraphs: ["The direct answers to the two questions that come up most."],
+        list: [
+          "\"Is it really necessary for landlords to document everything with photos when dealing with tenant move-outs?\" — Yes for anything that touches the deposit or damage: one set of dated move-in photos and one set at move-out will settle 90% of deposit disputes before they start.",
+          "\"How can landlords maintain accurate records of tenants and rental agreements?\" — Keep a per-property folder with the signed lease, addenda, payments, communications, and certificates; use a naming convention, store it off-device, and add the expiry dates to a calendar that reminds you.",
+        ],
+      },
+      {
+        heading: "The bottom line",
+        paragraphs: [
+          "Documentation is the cheapest insurance a landlord can buy. Photos settle deposits, receipts settle condition disputes, and certificates settle audits. For the full list of recurring obligations, pair this habit with the [27-point rental compliance checklist](/blog/27-point-rental-compliance-checklist).",
+          "RuleNest keeps the certificate side of that system in one place. [Start free](/signup), add your property, and let the vault hold the dates while your photo habit covers the rest.",
+        ],
+      },
+      {
+        heading: "Verify with official local sources",
+        paragraphs: [
+          "Deposit limits, retention windows, and inspection rules are set locally. Always confirm your city and state requirements before relying on this article.",
+        ],
+      },
+    ],
+    relatedLinks: [
+      { label: "The 27-point rental compliance checklist", to: "/blog/27-point-rental-compliance-checklist" },
+      { label: "Manage your documents", to: "/app/documents" },
+      { label: "Proof of compliance guide", to: "/guides/proof-of-compliance" },
+      { label: "Try RuleNest free", to: "/signup" },
+    ],
+  },
 ]
