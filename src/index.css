@@ -410,3 +410,33 @@
 .dark .card-3d .text-emerald-800 {
   color: #a7f3d0 !important;
 }
+
+/* ------------------- Handcrafted 3D stat icon tiles ------------------------- *
+   Gentle float animation + dark-mode vibrancy for the dashboard stat card
+   icon tiles (see IconTile in Dashboard.tsx). */
+
+@keyframes tile-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.icon-tile {
+  animation: tile-float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Keep the tile gradients vivid on the dark glass surface */
+.dark .icon-tile {
+  filter: saturate(1.15) brightness(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-tile {
+    animation: none;
+  }
+}

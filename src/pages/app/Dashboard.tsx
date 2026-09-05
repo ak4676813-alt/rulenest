@@ -122,14 +122,18 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={Building2}
-          iconBoxClasses="from-blue-500 to-indigo-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(37_99_235/0.5)]"
+          tileClasses="from-sky-400 via-blue-500 to-indigo-600"
+          glowClasses="shadow-[0_10px_25px_-5px_rgba(59,130,246,0.5)]"
+          floatDelay="0s"
           label="Total Properties"
           count={stats.totalProperties}
           sub={`${stats.cityCount} Cities`}
         />
         <StatCard
           icon={ActivityIcon}
-          iconBoxClasses="from-emerald-500 to-teal-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(16_185_129/0.5)]"
+          tileClasses="from-emerald-400 via-green-500 to-teal-600"
+          glowClasses="shadow-[0_10px_25px_-5px_rgba(16,185,129,0.5)]"
+          floatDelay="0.4s"
           label="Compliance Health"
           count={stats.portfolioHealth}
           suffix={<span className="text-base font-medium text-gray-400">/100</span>}
@@ -138,7 +142,9 @@ export default function Dashboard() {
         />
         <StatCard
           icon={AlertTriangle}
-          iconBoxClasses="from-amber-500 to-orange-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(245_158_11/0.55)]"
+          tileClasses="from-amber-400 via-orange-500 to-red-500"
+          glowClasses="shadow-[0_10px_25px_-5px_rgba(249,115,22,0.5)]"
+          floatDelay="0.8s"
           label="Action Required"
           count={stats.gapCount}
           sub={`${stats.overdueTasks} Overdue`}
@@ -146,7 +152,9 @@ export default function Dashboard() {
         />
         <StatCard
           icon={FileText}
-          iconBoxClasses="from-violet-500 to-purple-600 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-8px_rgb(139_92_246/0.55)]"
+          tileClasses="from-fuchsia-400 via-purple-500 to-violet-600"
+          glowClasses="shadow-[0_10px_25px_-5px_rgba(168,85,247,0.5)]"
+          floatDelay="1.2s"
           label="Documents"
           count={documents.length}
           sub={`${stats.expiringSoon} Expiring Soon`}
@@ -404,9 +412,60 @@ function useCountUp(target: number, duration = 800): number {
   return value
 }
 
+/* Handcrafted 3D icon tile — layered gradient, glass shine, inner bottom
+   shadow, tilt + hover lift. The outer span carries the gentle float while
+   the inner span owns the rotate/scale so the two transforms compose. */
+function IconTile({
+  icon: Icon,
+  tileClasses,
+  glowClasses,
+  floatDelay,
+}: {
+  icon: LucideIcon
+  tileClasses: string
+  glowClasses: string
+  floatDelay: string
+}) {
+  return (
+    <span className="icon-tile shrink-0" style={{ animationDelay: floatDelay }}>
+      <span
+        className={cn(
+          "relative flex h-14 w-14 rotate-[-3deg] items-center justify-center rounded-2xl bg-gradient-to-br text-white",
+          "transition-transform duration-300 ease-out group-hover:rotate-0 group-hover:scale-110",
+          tileClasses,
+          glowClasses,
+        )}
+      >
+        {/* Glass shine — blurred highlight along the top edge */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-1 top-1 h-2.5 rounded-full bg-gradient-to-b from-white/40 via-white/15 to-transparent blur-[3px]"
+        />
+        {/* Bottom inner shadow for depth */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-3.5 rounded-b-2xl bg-gradient-to-t from-black/30 to-transparent"
+        />
+        {/* Tiny handcrafted sparkle dot at the top-right */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-1 top-1 h-1 w-1 rounded-full bg-white/70 blur-[1px]"
+        />
+        <Icon
+          className="relative h-6 w-6 drop-shadow-[0_2px_3px_rgba(0,0,0,0.35)]"
+          strokeWidth={1.75}
+          aria-hidden="true"
+        />
+      </span>
+    </span>
+  )
+}
+
 function StatCard({
   icon: Icon,
-  iconBoxClasses,
+  tileClasses,
+  glowClasses,
+  floatDelay,
   label,
   count,
   suffix,
@@ -414,7 +473,9 @@ function StatCard({
   subClasses,
 }: {
   icon: LucideIcon
-  iconBoxClasses: string
+  tileClasses: string
+  glowClasses: string
+  floatDelay: string
   label: string
   count: number
   suffix?: ReactNode
@@ -424,7 +485,7 @@ function StatCard({
   const value = useCountUp(count)
 
   return (
-    <div className="card-3d h-full px-5 py-4 transition-all duration-300 hover:-translate-y-1 sm:px-6 sm:py-5">
+    <div className="card-3d group h-full px-5 py-4 transition-all duration-300 hover:-translate-y-1 sm:px-6 sm:py-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-gray-500">{label}</p>
@@ -436,14 +497,12 @@ function StatCard({
           </p>
           <p className={cn("mt-1 text-xs", subClasses ?? "text-gray-400")}>{sub}</p>
         </div>
-        <span
-          className={cn(
-            "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white ring-1 ring-white/20",
-            iconBoxClasses,
-          )}
-        >
-          <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-        </span>
+        <IconTile
+          icon={Icon}
+          tileClasses={tileClasses}
+          glowClasses={glowClasses}
+          floatDelay={floatDelay}
+        />
       </div>
     </div>
   )
