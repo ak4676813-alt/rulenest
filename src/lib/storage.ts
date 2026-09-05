@@ -1,15 +1,12 @@
-import type { AppData, StoredAccount } from "../types"
+import type { AppData } from "../types"
 import { buildEmptyData, buildExampleSeedData } from "../data/mockData"
 
 /* ------------------------------------------------------------------------ */
-/*  Persistence layer. In the prototype everything lives in localStorage;    */
-/*  to connect a real backend, replace each function body with an API call   */
-/*  and keep the signatures (see README → "Replacing mock data").           */
+/*  Persistence layer. Auth now lives in Supabase; app data (properties,     */
+/*  documents, tasks, radar-read state) persists in localStorage.            */
 /* ------------------------------------------------------------------------ */
 
 const DATA_KEY = "rulenest.data.v1"
-const ACCOUNTS_KEY = "rulenest.accounts.v1"
-const SESSION_KEY = "rulenest.session.v1"
 const SETTINGS_KEY = "rulenest.settings.v1"
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -39,28 +36,6 @@ export function resetData(): AppData {
   const seed = buildExampleSeedData()
   saveData(seed)
   return seed
-}
-
-/* ------------------------------ Accounts -------------------------------- */
-
-export function loadAccounts(): StoredAccount[] {
-  const accounts = safeParse<StoredAccount[]>(localStorage.getItem(ACCOUNTS_KEY), [])
-  // Strip any legacy demo account persisted from an older version — the demo
-  // login path is fully removed.
-  return accounts.filter((a) => a.email !== "demo@rulenest.com" && a.id !== "user_demo")
-}
-
-export function saveAccounts(accounts: StoredAccount[]): void {
-  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts))
-}
-
-export function loadSession(): string | null {
-  return localStorage.getItem(SESSION_KEY)
-}
-
-export function saveSession(userId: string | null): void {
-  if (userId) localStorage.setItem(SESSION_KEY, userId)
-  else localStorage.removeItem(SESSION_KEY)
 }
 
 /* ------------------------------ Settings -------------------------------- */

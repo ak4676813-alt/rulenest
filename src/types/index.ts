@@ -14,12 +14,11 @@ export interface User {
   phone?: string
   plan: PlanId
   avatarColor: string
+  /** Google profile picture URL when the user signed in with Google OAuth. */
+  avatarUrl?: string
+  /** "google" | "email" — how the user last authenticated. */
+  provider?: "google" | "email"
   createdAt: string
-}
-
-/** An account as stored by the prototype auth layer (localStorage). */
-export interface StoredAccount extends User {
-  password: string
 }
 
 export type PropertyStatus = "excellent" | "good" | "fair" | "attention"

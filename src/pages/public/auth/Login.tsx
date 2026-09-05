@@ -5,9 +5,10 @@ import AuthShell from "../../../components/AuthShell"
 import Button from "../../../components/ui/Button"
 import { Field, Input } from "../../../components/ui/Input"
 import { useAuth } from "../../../context/AuthContext"
+import { AuthNotConfigured, GoogleButton } from "./GoogleButton"
 
 export default function Login() {
-  const { login } = useAuth()
+  const { signIn, configured } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -15,24 +16,34 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    // Simulate a network round-trip for realism.
-    window.setTimeout(() => {
-      const result = login(email, password)
-      setLoading(false)
-      if (!result.ok) {
-        setError(result.error ?? "Login failed.")
-        return
-      }
-      navigate("/app/dashboard")
-    }, 500)
+    const result = await signIn(email, password)
+    setLoading(false)
+    if (!result.ok) {
+      setError(result.error ?? "Login failed.")
+      return
+    }
+    navigate("/app/dashboard")
   }
 
   return (
     <AuthShell title="Welcome back" subtitle="Log in to your RuleNest workspace.">
+      {!configured && <AuthNotConfigured />}
+
+      {configured && (
+        <>
+          <GoogleButton label="Continue with Google" />
+          <div className="my-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">or</span>
+            <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
+          </div>
+        </>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Field label="Email" htmlFor="login-email">
           <Input
@@ -44,6 +55,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={!configured}
           />
         </Field>
 

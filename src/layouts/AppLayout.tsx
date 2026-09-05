@@ -86,7 +86,7 @@ function SearchResult({
 }
 
 export default function AppLayout() {
-  const { user, logout } = useAuth()
+  const { user, signOut } = useAuth()
   const data = useData()
   const navigate = useNavigate()
   const location = useLocation()
@@ -143,7 +143,7 @@ export default function AppLayout() {
   }, [query, data.properties, data.documents, data.tasks])
 
   function handleLogout() {
-    logout()
+    signOut()
     navigate("/login")
   }
 
@@ -186,7 +186,15 @@ export default function AppLayout() {
               label="Account menu"
               trigger={
                 <div className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-gray-50">
-                  <Avatar name={user.name} colorClass={user.avatarColor} />
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt=""
+                      className="h-8 w-8 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <Avatar name={user.name} colorClass={user.avatarColor} />
+                  )}
                   <div className="min-w-0 flex-1 text-left">
                     <p className="truncate text-sm font-medium text-gray-900">{user.name}</p>
                     <p className="truncate text-xs text-gray-500">{user.role}</p>
@@ -425,7 +433,15 @@ export default function AppLayout() {
                 label="Account menu"
                 trigger={
                   <div className="flex cursor-pointer items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-gray-100">
-                    <Avatar name={user.name} size="sm" colorClass={user.avatarColor} />
+                    {user.avatarUrl ? (
+                      <img
+                        src={user.avatarUrl}
+                        alt=""
+                        className="h-7 w-7 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <Avatar name={user.name} size="sm" colorClass={user.avatarColor} />
+                    )}
                     <ChevronDown className="hidden h-4 w-4 text-gray-400 sm:block" aria-hidden="true" />
                   </div>
                 }

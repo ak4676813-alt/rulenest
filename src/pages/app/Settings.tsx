@@ -18,7 +18,8 @@ import { Field, Input, Select } from "../../components/ui/Input"
 import { useAuth } from "../../context/AuthContext"
 import { useData } from "../../context/DataContext"
 import { useToast } from "../../context/ToastContext"
-import { loadAccounts, loadSettings, saveAccounts, saveSettings } from "../../lib/storage"
+import { supabase } from "../../lib/supabase"
+import { loadSettings, saveSettings } from "../../lib/storage"
 import { cn } from "../../lib/utils"
 
 type SectionId = "profile" | "notifications" | "security" | "subscription" | "defaults" | "data"
@@ -61,7 +62,7 @@ const DEFAULT_SETTINGS: SettingsState = {
 }
 
 export default function Settings() {
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, configured } = useAuth()
   const data = useData()
   const { toast } = useToast()
   const [section, setSection] = useState<SectionId>("profile")
@@ -93,10 +94,9 @@ export default function Settings() {
     toast({ variant: "success", title: `${sectionName} saved` })
   }
 
-  function changePassword() {
-    const account = loadAccounts().find((a) => a.id === user?.id)
-    if (!account || account.password !== passwords.current) {
-      toast({ variant: "error", title: "Current password is incorrect" })
+  async function changePassword() {
+    if (!configured) {
+      toast({ variant: "error", title: "Authentication isn't configured" })
       return
     }
     if (passwords.next.length < 8 || !/\d/.test(passwords.next)) {
@@ -107,9 +107,11 @@ export default function Settings() {
       toast({ variant: "error", title: "Passwords don't match" })
       return
     }
-    saveAccounts(
-      loadAccounts().map((a) => (a.id === user?.id ? { ...a, password: passwords.next } : a)),
-    )
+    const { error } = await supabase!.auth.updateUser({ password: passwords.next })
+    if (error) {
+      toast({ variant: "error", title: "Couldn't update password", description: error.message })
+      return
+    }
     setPasswords({ current: "", next: "", confirm: "" })
     toast({ variant: "success", title: "Password updated" })
   }

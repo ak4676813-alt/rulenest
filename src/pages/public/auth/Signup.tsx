@@ -5,14 +5,16 @@ import AuthShell from "../../../components/AuthShell"
 import Button from "../../../components/ui/Button"
 import { Field, Input } from "../../../components/ui/Input"
 import { useAuth } from "../../../context/AuthContext"
+import { AuthNotConfigured, GoogleButton } from "./GoogleButton"
 
 export default function Signup() {
-  const { signup } = useAuth()
+  const { signUp, configured } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   const checks = [
@@ -20,9 +22,10 @@ export default function Signup() {
     { label: "Contains a number", ok: /\d/.test(password) },
   ]
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    setNotice(null)
     if (!name.trim()) {
       setError("Please enter your name.")
       return
@@ -36,19 +39,35 @@ export default function Signup() {
       return
     }
     setLoading(true)
-    window.setTimeout(() => {
-      const result = signup(name, email, password)
-      setLoading(false)
-      if (!result.ok) {
-        setError(result.error ?? "Signup failed.")
-        return
-      }
-      navigate("/app/dashboard")
-    }, 500)
+    const result = await signUp(email, password, name)
+    setLoading(false)
+    if (!result.ok) {
+      setError(result.error ?? "Signup failed.")
+      return
+    }
+    if (result.error) {
+      // Email confirmation pending.
+      setNotice(result.error)
+      return
+    }
+    navigate("/app/dashboard")
   }
 
   return (
     <AuthShell title="Create your account" subtitle="Free plan — no credit card required.">
+      {!configured && <AuthNotConfigured />}
+
+      {configured && (
+        <>
+          <GoogleButton label="Continue with Google" />
+          <div className="my-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">or</span>
+            <span className="h-px flex-1 bg-gray-200" aria-hidden="true" />
+          </div>
+        </>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Field label="Full name" htmlFor="signup-name">
           <Input
@@ -59,6 +78,7 @@ export default function Signup() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            disabled={!configured}
           />
         </Field>
         <Field label="Work email" htmlFor="signup-email">
@@ -71,6 +91,7 @@ export default function Signup() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={!configured}
           />
         </Field>
         <Field label="Password" htmlFor="signup-password">
@@ -83,6 +104,7 @@ export default function Signup() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={!configured}
           />
         </Field>
 
@@ -105,6 +127,15 @@ export default function Signup() {
           </ul>
         )}
 
+        {notice && !error && (
+          <p
+            className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-800"
+            role="status"
+          >
+            {notice}
+          </p>
+        )}
+
         {error && (
           <p
             className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
@@ -114,7 +145,7 @@ export default function Signup() {
           </p>
         )}
 
-        <Button type="submit" size="lg" className="w-full" loading={loading}>
+        <Button type="submit" size="lg" className="w-full" loading={loading} disabled={!configured}>
           Create account
         </Button>
       </form>
