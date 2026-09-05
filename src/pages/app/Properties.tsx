@@ -39,19 +39,18 @@ export default function Properties() {
   }, [properties, query, status, sort])
 
   return (
+    <div className="relative isolate">
+      {/* Subtle radial/mesh backdrop behind the grid (same as the dashboard) */}
+      <div aria-hidden="true" className="dashboard-mesh pointer-events-none absolute inset-0 -z-10" />
+
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Properties</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            {properties.length} propert{properties.length === 1 ? "y" : "ies"} ·{" "}
-            {new Set(properties.map((p) => p.city)).size} cities
-          </p>
-        </div>
-        <Button icon={<Plus className="h-4 w-4" />} onClick={() => setAddOpen(true)}>
-          Add Property
-        </Button>
+      {/* Header — the global "Add Property" button lives in the top bar */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Properties</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          {properties.length} propert{properties.length === 1 ? "y" : "ies"} ·{" "}
+          {new Set(properties.map((p) => p.city)).size} cities
+        </p>
       </div>
 
       {/* Controls */}
@@ -137,7 +136,7 @@ export default function Properties() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card md:block">
+          <div className="card-3d hidden overflow-hidden md:block">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-400">
@@ -201,6 +200,7 @@ export default function Properties() {
       )}
 
       <AddPropertyModal open={addOpen} onClose={() => setAddOpen(false)} />
+      </div>
     </div>
   )
 }
