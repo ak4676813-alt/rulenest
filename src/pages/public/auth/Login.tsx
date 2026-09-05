@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff, KeyRound, Mail } from "lucide-react"
 import AuthShell from "../../../components/AuthShell"
@@ -8,20 +8,26 @@ import { useAuth } from "../../../context/AuthContext"
 import { AuthNotConfigured, GoogleButton } from "./GoogleButton"
 
 export default function Login() {
-  const { signIn, configured } = useAuth()
+  const { signIn, configured, loading, user } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
+  // Once auth resolves with an active session (e.g. OAuth return), go to the
+  // dashboard instead of staying stuck on the login page.
+  useEffect(() => {
+    if (!loading && user) navigate("/app/dashboard", { replace: true })
+  }, [loading, user, navigate])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
-    setLoading(true)
+    setSubmitting(true)
     const result = await signIn(email, password)
-    setLoading(false)
+    setSubmitting(false)
     if (!result.ok) {
       setError(result.error ?? "Login failed.")
       return
@@ -109,7 +115,7 @@ export default function Login() {
           </Link>
         </div>
 
-        <Button type="submit" size="lg" className="w-full" loading={loading}>
+        <Button type="submit" size="lg" className="w-full" loading={submitting}>
           Log in
         </Button>
       </form>

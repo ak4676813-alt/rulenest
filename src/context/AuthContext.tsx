@@ -12,6 +12,7 @@ import type { User } from "../types"
 import { supabase, isAuthConfigured } from "../lib/supabase"
 import { buildExampleSeedData } from "../data/mockData"
 import { loadData, saveData } from "../lib/storage"
+import type { Session } from "@supabase/supabase-js"
 
 interface AuthResult {
   ok: boolean
@@ -20,6 +21,10 @@ interface AuthResult {
 
 interface AuthContextValue {
   user: User | null
+  /** Live Supabase session (null when signed out). */
+  session: Session | null
+  /** True while auth is still being resolved (e.g. OAuth hash → session). */
+  loading: boolean
   /** True when SUPABASE_URL + ANON_KEY are configured (real auth live). */
   configured: boolean
   signInWithGoogle: () => Promise<void>
@@ -61,6 +66,10 @@ function toUser(
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  // Start resolving immediately when configured; if not configured there is
+  // nothing to resolve, so auth is "ready" right away.
+  const [loading, setLoading] = useState<boolean>(() => isAuthConfigured)
 
   // Seed the 2 example properties exactly once for a brand-new user.
   const seededUserIdRef = useRef<string | null>(null)
@@ -74,19 +83,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user])
 
-  // Restore the session + subscribe to auth changes.
+  // Restore the session on mount (this also consumes the OAuth #access_token
+  // hash on the way back from Google) AND subscribe to live auth changes.
   useEffect(() => {
-    if (!supabase) return
+    if (!supabase) {
+      setSession(null)
+      setUser(null)
+      setLoading(false)
+      return
+    }
     let active = true
-    supabase.auth.getSession().then(({ data }) => {
+    setLoading(true)
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!active) return
+        setSession(data.session)
+        setUser(data.session?.user ? toUser(data.session.user) : null)
+        setLoading(false)
+      })
+      .catch(() => {
+        if (!active) return
+        setLoading(false)
+      })
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, currentSession) => {
       if (!active) return
-      const sessionUser = data.session?.user
-      setUser(sessionUser ? toUser(sessionUser) : null)
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!active) return
-      const sessionUser = session?.user
-      setUser(sessionUser ? toUser(sessionUser) : null)
+      setSession(currentSession)
+      setUser(currentSession?.user ? toUser(currentSession.user) : null)
+      setLoading(false)
     })
     return () => {
       active = false
@@ -164,6 +188,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
+      session,
+      loading,
       configured: isAuthConfigured,
       signInWithGoogle,
       signUp,
@@ -171,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       updateUser,
     }),
-    [user, signInWithGoogle, signUp, signIn, signOut, updateUser],
+    [user, session, loading, signInWithGoogle, signUp, signIn, signOut, updateUser],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

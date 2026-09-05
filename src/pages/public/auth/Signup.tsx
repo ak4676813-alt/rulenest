@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Check, KeyRound, Mail, User as UserIcon } from "lucide-react"
 import AuthShell from "../../../components/AuthShell"
@@ -8,19 +8,25 @@ import { useAuth } from "../../../context/AuthContext"
 import { AuthNotConfigured, GoogleButton } from "./GoogleButton"
 
 export default function Signup() {
-  const { signUp, configured } = useAuth()
+  const { signUp, configured, loading, user } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const checks = [
     { label: "At least 8 characters", ok: password.length >= 8 },
     { label: "Contains a number", ok: /\d/.test(password) },
   ]
+
+  // Once auth resolves with an active session (e.g. OAuth return), go to the
+  // dashboard instead of staying stuck on the signup page.
+  useEffect(() => {
+    if (!loading && user) navigate("/app/dashboard", { replace: true })
+  }, [loading, user, navigate])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -38,9 +44,9 @@ export default function Signup() {
       setError("Password must be at least 8 characters and contain a number.")
       return
     }
-    setLoading(true)
+    setSubmitting(true)
     const result = await signUp(email, password, name)
-    setLoading(false)
+    setSubmitting(false)
     if (!result.ok) {
       setError(result.error ?? "Signup failed.")
       return
@@ -145,7 +151,7 @@ export default function Signup() {
           </p>
         )}
 
-        <Button type="submit" size="lg" className="w-full" loading={loading} disabled={!configured}>
+        <Button type="submit" size="lg" className="w-full" loading={submitting} disabled={!configured}>
           Create account
         </Button>
       </form>

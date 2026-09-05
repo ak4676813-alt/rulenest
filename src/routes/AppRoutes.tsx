@@ -42,7 +42,16 @@ function PageLoader() {
 }
 
 function RequireAuth({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  // While auth is being resolved (e.g. the OAuth #access_token hash is being
+  // exchanged for a session), show a spinner — do NOT bounce to /login.
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50/70" role="status" aria-label="Loading">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-primary-600" />
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/login" replace />
   return <>{children}</>
 }
